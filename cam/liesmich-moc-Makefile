@@ -1,0 +1,13 @@
+
+fehler:    undefined reference to `vtable for Dialog_drill'
+
+
+im www gefunden:
+
+
+For each header that declares a class with the Q_OBJECT macro (any class that with signals or slots), I configure the project to compile with a custom build option of "moc header.h -o moc_header.cpp" and add moc_header.cpp to the project.
+
+
+von hand:   moc dialog_drill.h -o moc_dialog_drill.cpp
+
+

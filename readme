@@ -1,0 +1,95 @@
+Hallo,
+this is my clone from Librecad 2, with some additions and changes.
+In the main it is for CNC milling programmers (therewith i get my money).
+Some differences to original LC2:
+
+- see menu point "additional preferences"
+
+- you can switch off native file dialog (e.g. KDE): it's important if you have mounted big directories over NFS.
+  otherwise you don't need it.
+  
+- you can adapt number of recent files and sorting order  
+
+- smaller grid steps switchable: 1-2-5  // 1-10-100
+
+- try out "SnapDK": i have written my own snapper, it is mostly adaptable on your personal preferences
+  i mean, the snapper is the most important tool in a CAD programm, it is VERY often used.
+  
+  - snapCenter now occurs when mouse is near the contour, and also near center point, when button
+    "snapCenter only when near contour" is not checked. read more in the sources (entitycontainer)
+     
+  - you can choose between some single snapModes, only ONE at the same time is possible! (sorry, but i don't 
+    like the snapper in LC2), and "snapAuto".
+    
+  - in "snapAuto" you can define what snapModes are active. Only the precedence is hard-coded and not in SETTINGS.
+    
+  - in "snapAuto" you will see different cursor forms, depending on the snap mode
+  
+  - "autoSnapTolerance" works like "snapRange", but only for autoSnap
+    
+  - snap happens on atomic entities, or on containers, if you have checked the left-side buttons in snap menubar.
+  
+  - "snapRange" limits the effected area, outside you have snapFree 
+  
+  - set "snapRange" = 0 and it is deactivated.
+  
+  - "snap intersection manually" is now resurfaced (someone has removed it in LC, but i often need it)
+  
+- in menu "modify" i added "move absolute zero" (i need it very often)
+
+- in menu "dimensions" i added "ordinate dimension" (it is not perfect, but it works for me)
+
+- in "draw arc tangential" i added "endpoint"
+
+- in menu "select" i added 9 new modes, some of them specially for bore hole patterns,
+
+- "select circle": works alike "select window", but is round
+
+- some keyboard shortcuts added: "hh" toggles horizontal restriction, "vv" toggles vertical restriction
+  "sx" and "sy" for snap modes, "mz" move absolute zero
+  
+- new menu "CAM" with some plugins
+
+- needed additions to plugin-interface in main code
+
+- a postprocessor who produces "heidenhain dialog language", a very good alternative to G-code
+
+- for the "oldtimers" (alike myself) i converted the old qcad-icons for use together with new LC2-icons
+  (rename librecad/res or make a symbolic link)
+  
+- in dialog-boxes for lines, arc and circles i've added some fields for output, so i can simply copy lines 
+   with mouse into my growing CNC program
+   
+for all details, try a "grep -rn '++++++' . " - it shows you (i hope all) modified parts of code
+
+that all is not complete, many problems are waiting for solutions, but i'm working everyday with this CAD program
+
+some known bugs:
+
+  trim 2 arcs together often fails because of a small difference between floating point numbers.
+  has anybody an idea for a solution ? It is an old and very annoying problem
+
+  trim 2 arcs together: i added an "if(0)" around the LC2-code, because it is currently buggy
+  
+  "selectIntersection" sometimes fails since big modifications in LC2, but i don't want to downgrade, it is too 
+   complex. (see last items on sourceforge)
+   
+  print Preview : here is some work to do, but it is not very important for me
+  
+  DXF import :  can we consider ISOCPEUR ? i found "isocpeur.ttf" in a file, i think from "inventor" ?
+  
+  RS_Arc::getNearestPointOnEntity(..) is buggy: it stores a wrong value in *dist (in LC2 this value is not
+  meaningful, but we should repair it)
+  
+  RS_EntityContainer::nextEntity(...)
+     case RS2::ResolveAllButTexts: {
+        we have to decrement "entIdx" if we go into a subContainer (see case RS2::ResolveAll)
+	
+     "case RS2::ResolveAllForSnap:" i hope it has no bugs, this code is very new
+     
+ Good luck! I wish you success with this program. Use it on your own risk!
+ 
+ Dietmar
+ 
+  
+

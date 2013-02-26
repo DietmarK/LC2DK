@@ -1,0 +1,432 @@
+
+nützliche  kommandozeilen :
+----------------------------
+
+grep:       echo -e "\n";grep -rnT --exclude=\*~ --exclude=\*_     'slotSnapIntersectionManual()' librecad/src/ ; echo -e "\n"
+
+find:       echo -e '\n';find librecad/src -type f -regex '.*\(cpp\|h\)'   -newer libraries/Makefile  |xargs ls -lt;echo -e '\n'
+
+suche files neuer als qg_arcoptions.cpp wo kein '+++++++' vorkommt:
+
+find -type f -newer qg_arcoptions.cpp -print0|xargs -0 grep -L  '+++++++'
+
+ ~/camcad11-a37> ls -ltgGr $(grep -rl '++++++++++' --exclude=\*.xpm  --exclude=\*~  .)
+
+--------------------------------------------
+
+find -type f \( -name \*cpp -o -name \*h -o -name \*i \) -newer custom.pro |xargs ls -lt   oder  |wc
+
+grep -lr  --exclude=\*[^phi]  '++++' .|wc
+
+find -type f \( -name \*cpp -o -name \*h -o -name \*i \) -newer custom.pro |xargs grep -L '++++'      zeigt alle veraenderten ohne '+++++++++'
+
+dann weiter mit:
+
+   diff ~/LibreCAD-gitclone-2013-januar-21___original___/librecad/src/lib/engine/rs_circle.cpp   ./lib/engine/rs_circle.cpp
+
+wenn nichts anders:   diff ersetzen durch touch -r
+
+   touch -r  ~/LibreCAD-gitclone-2013-januar-21___original___/librecad/src/lib/engine/rs_circle.cpp   ./lib/engine/rs_circle.cpp
+
+
+tkdiff LibreCAD-gitclone-2013-februar-03___original___/librecad/src/lib/engine/rs_graphic.h  lc2-dk3/librecad/src/lib/engine/rs_graphic.h
+
+---------------------------
+
+   datei-muell :
+
+   librecad/src/ui/forms/qg_snaptoolbar.ui___
+   librecad/src/ui/forms/qg_cadtoolbarsnap.cpp__
+   librecad/src/ui/forms/qg_cadtoolbarsnap.h__
+   librecad/src/ui/forms/qg_cadtoolbarsnap.ui__
+
+--------------------------------------------------
+
+main.h  :   # define QC_DEBUGGING true  (false)   ???
+
+---------------------
+
+neue dateien:
+
+./src/ui/forms/qg_dlgoptionsgeneraladd.h
+./src/ui/forms/qg_dlgoptionsgeneraladd.cpp
+
+./src/actions/rs_actionselectcircles.h
+./src/actions/rs_actionselectcircles.cpp
+./src/actions/rs_actionselectcircle.h
+./src/actions/rs_actionselectcircle.cpp
+
+./src/lib/engine/rs_overlaycircle.h
+./src/lib/engine/rs_overlaycircle.cpp
+
+
++++++++++++++++++++++++++++++++++
+
+kreis zeichnen, was geschieht? :
+
+cd librecad/src/
+
+  ---  button anclicken:
+
+../../generated/librecad/ui/ui_qg_cadtoolbarcircles.h : 169 :           QObject::connect(bCircle, SIGNAL(clicked()), QG_CadToolBarCircles, SLOT(drawCircle()));
+
+ui/forms/qg_cadtoolbarcircles.cpp : 86 :                              void QG_CadToolBarCircles::drawCircle() { ...  actionHandler->slotDrawCircle();
+                                                                      void QG_CadToolBarCircles::restoreAction()  { ...  actionHandler->slotDrawCircle();
+
+ui/qg_actionhandler.cpp : 1355 :                             void QG_ActionHandler::slotDrawCircle() { setCurrentAction(RS2::ActionDrawCircle); }
+
+                                                        RS_ActionInterface* QG_ActionHandler::setCurrentAction(RS2::ActionType id) { ...
+     ---- neues Objekt erzeugen:                           case RS2::ActionDrawCircle:  a = new RS_ActionDrawCircle(*doc, *gv);   break;
+                                                            gv->setCurrentAction(a);  (RS_GraphicView* gv = mainWindow->getGraphicView();)
+
+actions/rs_actiondrawcircle.cpp :           RS_ActionDrawCircle::RS_ActionDrawCircle( ..) {  reset(); }   ????  
+               
+                                          class RS_ActionDrawCircle : public RS_PreviewActionInterface
+
+                                      class RS_PreviewActionInterface : public RS_ActionInterface
+
+                                   class RS_ActionInterface : public QObject, public RS_Snapper
+
+                                class RS_Snapper { void init() { snapMode = graphicView->getDefaultSnapMode();  }   }
+
+                                         RS_Snapper::RS_Snapper  { ...  snapPoint(QMouseEvent* e){...} ; snapPoint(const RS_Vector& coord, bool setSpot) ; drawSnapper();    }
+
+             
+
+                     void RS_ActionDrawCircle::mouseReleaseEvent(QMouseEvent* e) {   ...   RS_CoordinateEvent ce(snapPoint(e));  coordinateEvent(&ce); 
+                     void RS_ActionDrawCircle::coordinateEvent(RS_CoordinateEvent* e) { ... trigger(); 
+                     void RS_ActionDrawCircle::trigger() { ... container->addEntity(circle);  graphicView->redraw(RS2::RedrawDrawing);
+
+++++++++++++++++++++++++++++++++++++++++++
+
+unsicher bei  " ./ui/forms/qg_printpreviewoptions.cpp " : zeile 134 ca.  RS_SETTINGS->readEntry("/PrintPreviewAutoScale", "1")
+
+
+------------------------
+
+./lib/modification/rs_modification.cpp : if (trimEntity->rtti()==RS2::EntityCircle) { ...   ist anders als camcad....  geht das so ?   (circle --> arc)  zeile 2065   if (1) ..
+
+---------------
+
+
+./lib/engine/rs_line.cpp   zeile 166   (this)->getNearestCenter(..    line hat kein center !
+
+RS_Vector RS_Line::getNearestCenter  wieder reinkopiert  (war auskommentiert !)
+
+
+----ooooooooooooo :    problem:
+
+lib/engine/rs_entitycontainer.cpp   bool RS_EntityContainer::evaluateSnapSettings(RS_Entity* en)    geht nicht mehr   (-fpermissive)  :: zeile 1285
+
+
+
+---------------------------------------
+
+aktuellen snapshot clonen, dann cd dorthin,
+
+    git log --since="2 weeks ago" -p   ::
+
+----------------------------------------
+
+3.2.2013 :  commits eingearb. bis:
+
+commit 6b043be2f07d03a9b2aa258b80346ad892a1dc4e
+Author: Rallaz <rallazz@gmail.com>
+Date:   Sun Feb 3 11:33:00 2013 +0100
+
+    ascii point added column point format
+
+---------------------------------------------------------
+81cf510f4a71f7d622d338e8427250c61b96
+
+am 5.2.13 eing.
+
+----------------------
+
+
+
+
+RS_FilterDXFRW::addDimOrdinate(const DL_DimensionData&, const DL_DimOrdinateData&) not yet implemented 
+
+------------------------
+
+
+     https://github.com/LibreCAD/LibreCAD/commit/81ae98194220c0fa2f307a48527644ea0304a36e    erledigt
+     https://github.com/LibreCAD/LibreCAD/commit/d2363ca33f2f8f91733de682425ff979f1508e9   erledigt
+
+-----------------------------
+
+
+6.2.13 :
+
+in rs_filterdxfrw.cpp  4 zeilen rein:   nach "RS_DEBUG->print("Text as unicode:"); \n   RS_DEBUG->printUnicode(t); "
+
+        t.replace(QRegExp("%%c"), QChar(0xF8)); // Diameter
+    t.replace(QRegExp("%%d"), QChar(0xB0)); // Degree
+    t.replace(QRegExp("%%p"), QChar(0xB1)); // Plus/minus
+    t.replace(QRegExp("\\\\[pP]"), QChar('\n'));
+
+dasselbe nochmal mit grossbuchstaben
+
+------------------------------
+
+siehe cam8  und 3 plugin-progs :  add/get variable ergaenzt
+
+-----------------------------
+problem beim DXF-import MText:
+
+
+"\fISOCPEUR"   ????  mtext
+
+00057-01.05.01_Deckplatte-4-Loch.dxf ::::   (inventor ???)
+
+
+  0
+STYLE
+  5
+A0
+330
+3
+100
+AcDbSymbolTableRecord
+100
+AcDbTextStyleTableRecord
+  2
+Aktuell-ISO
+ 70
+     0
+ 40
+0.0
+ 41
+1.0
+ 50
+0.0
+ 71
+     0
+ 42
+0.2
+  3
+isocpeur.ttf
+  4
+
+1001
+ACAD
+1000
+ISOCPEUR
+1071
+      256
+  0
+STYLE
+
+..................................
+
+
+100
+AcDbMText
+ 10
+-28.78099203109741
+ 20
+0.0
+ 30
+0.0
+ 40
+3.499999940395355
+ 41
+60.93326133839532
+ 71
+     4
+ 72
+     1
+  1
+\fISOCPEUR|b0|i0;alle unbema\U+00DFten Radien R5
+  7
+DIN 6771 - 3.50
+ 73
+     1
+ 44
+1.0
+  0
+ENDBLK
+
+----------------------
+---------------------------------------
+
+dateien vergleichen, 17.2.13:
+
+in libraries/libdxfrw nur 2 kleine ergaenzungen, die anderen files ohne aenderungen:
+libraries/libdxfrw/src/drw_entities.h:890 ff   DRW_Coord getExtrusion() const {return extPoint;}   string getName() const {return name;}   2x const fehlt
+
+------------------
+in librecad:
+
+main/main.h:   # define QC_DEBUGGING false/true   bringt nichts, std::cout ist besser
+main/qc_mdiwindow.cpp: commit
+main/doc_plugin_interface.h:  2 stellen ++++
+main/qc_applicationwindow.cpp: viele erg. ++++++
+main/doc_plugin_interface.cpp: einige erg. +++++
+
+-----------------
+
+actions:
+    rs_actionselectcircles.h   neu hinzu
+    rs_actionselectcircles.cpp     "
+    rs_actiondefault.cpp        1x +++++++
+    rs_actiondrawlinerelangle.cpp   2x +++++++
+    rs_actiondrawarc.cpp           nur komment  IconPath
+    rs_actionselectwindow.h     2x ++++++++++++
+    rs_actionmodifymove.h      2x +++++++++
+    rs_actionmodifymove.cpp    +++++++++
+    rs_actionsetsnapmode.cpp__   toter code
+    rs_actionsnapintersectionmanual.h   +++++
+    rs_actionsnapintersectionmanual.cpp    +++++++  slot ...
+    rs_actionselectcircle.h     neu hinzu
+    rs_actionselectcircle.cpp
+    rs_actionpolylinedelbetween.cpp   unveraend.
+    rs_actionpolylinedel.cpp      commit
+    rs_actiondrawarctangential.h    +++++++++
+    rs_actiondrawarctangential.cpp  ++++++++++++++
+    rs_actionselectwindow.cpp    +++++++
+    rs_actionprintpreview.cpp     +++++    setScale   autozoom     ?????
+    rs_actionprintpreview.h      +++++
+    rs_actiondimension.cpp     commit
+    rs_actiondimension.h      commit
+    rs_actiondimordinate.cpp   neu
+    rs_actiondimordinate.h
+    rs_actionmodifytrim.cpp   nur cout
+
+cmd/rs_commands.cpp:  2 stellen ++++
+
+------------
+
+lib/actions/rs_snapper.cpp / .h  viele ++++++++++
+
+----------------
+
+lib/engine:
+    rs_circle.h : keine aend.
+    rs_entity.h:  eine erg.:        virtual bool isOutsideWindow(RS_Vector v1, RS_Vector v2);
+    rs_atomicentity.h: eine erg.:     virtual double getAngleLength() const 
+    rs_line.h:                        virtual RS_Vector getNearestCenter(c...  
+    rs_line.cpp:               unklar: getNearestMiddle(....   return getNearestCenter(              ??????????????
+                           getNearestCenter(   *dist = RS_MAXDOUBLE;
+    rs_overlaycircle.h  neu,  fuer actions/rs_actionselectcircle.cpp
+    rs_flags.h     #include "../debug/rs_debug.h"	?????
+    rs_entity.cpp:    hinzu: isOutsideWindow(...
+    rs_entitycontainer.h:   zwei erg. ++++++
+    rs_arc.h:    public  fuer 2 variable
+    rs_graphic.h   commit
+    rs_document.h    unveraend.
+    rs_block.cpp   commit
+    rs_block.h    commit
+    rs_polyline.h  commit
+    rs_polyline.cpp commit
+    rs_insert.cpp   commit
+    rs_circle.cpp   commit
+    rs_overlaycircle.cpp  neu hinzu
+    rs.h                viele ++++++++
+    rs_graphic.cpp   commit
+    rs_dimension.h    3x  +++++++++
+    rs_dimension.cpp      RS_Dimension::getTextWidth() hinzu
+    rs_dimordinate.h   neu hinzu
+    rs_dimordinate.cpp
+    rs_ellipse.cpp      nichts wesentliches, nur cout hinzu
+    rs_entitycontainer.cpp  viele +++++++++++
+    rs_circle.h     unveraend.
+    rs_arc.cpp     3x  ++++++++
+
+lib/filters:
+    rs_filterdxf.h     unused ??
+    rs_filterdxf.cpp   unused ??  dimordinate hinzu 
+    rs_filterdxf1.cpp  mehrere cout
+    rs_filterdxfrw.cpp mehere +++++++, commits
+
+lib/gui:
+    rs_grid.cpp   +++++++++
+    rs_painterqt.cpp  +++++++++ am ende
+    rs_painter.h        ++++++++++
+    rs_painterqt.h    +++++++++++++
+    rs_eventhandler.cpp  +++++++++
+    rs_graphicview.cpp   unveraend.
+    rs_dialogfactoryinterface.h       ++++++++++
+    rs_dialogfactoryadapter.h        +++++++++++
+
+lib/information/rs_information.cpp  1x ++++++
+
+lib/modification:
+    rs_selection.h     +++++++++
+    rs_selection.cpp    ++++++++
+    rs_modification.h   +++++
+    rs_modification.cpp  ++++++
+
+lib/scripting/rs_python_wrappers.cpp   ++++++++
+
+plugins:
+    document_interface.h    ++++++++++++++
+    
+plugins/intern:
+    qc_actiongetselect.h   +++++++++++++
+    qc_actiongetselect.cpp  +++++++++++++
+
+ui:
+    qg_graphicview.cpp    1x +++++++
+    qg_filedialog.cpp     ++++++++++
+    qg_actionfactory.cpp   +++++++++++++++++
+    qg_actionhandler.h     ++++++++++++++
+    qg_actionhandler.cpp   +++++++++++++++++
+    qg_dialogfactory.h     ++++++++++++++
+    qg_dialogfactory.cpp   ++++++++++++++++++
+    
+ui/forms:
+    qg_snaptoolbar.h    +++++++++++++++++
+    qg_snaptoolbar.cpp  +++++++++++++++++++++++
+    qg_dlgline.cpp      ++++++++++++++
+    qg_dlgline.ui       qtcreator +++++++++
+    qg_dlgcircle.cpp    +++++++++++++
+    qg_dlgcircle.ui     qtcreator +++++++++
+    qg_dlgarc.cpp     +++++++++++++
+    qg_dlgarc.ui      qtcreator +++++++++
+    qg_cadtoolbarselect.ui
+    qg_arctangentialoptions.ui
+    qg_cadtoolbararcs.ui
+    qg_cadtoolbardim.ui
+    qg_dimordinateoptions.ui
+    qg_dlgoptionsgeneraladd.ui
+    qg_cadtoolbarmodify.ui
+    qg_arctangentialoptions.h        ++++++++++++++++++
+    qg_cadtoolbararcs.cpp           +++++++++
+    qg_arctangentialoptions.cpp   +++++++++++++++++++
+    qg_printpreviewoptions.cpp    ?? commit ?
+    qg_cadtoolbardim.h            +++++
+    qg_cadtoolbardim.cpp          +++++++++
+    qg_dimordinateoptions.h     neu hinzu
+    qg_dimordinateoptions.cpp
+    qg_dlgoptionsgeneraladd.cpp   neu
+    qg_snaptoolbar.cpp           +++++++++++++++++++++++++++
+    
+-----------------------------------------
+
+fehler gefunden in rs_arc.cpp:680           RS_Arc::getTrimPoint(....   der alte code von qcad funktioniert besser
+
+---------------------------------
+
+am 20.02-2013:  alle commits bis hierher eingearb.    ~/LibreCAD-gitclone-2013-februar-20 
+
+-------------
+
+dietmar@i5:~/LibreCAD-gitclone-2013-februar-25 ::
+
+letzter commit:
+
+commit 3d291b926f05d6cbfd14dcb1dae3ca1f9ad92c03
+Author: Dongxu Li <dongxuli2011@gmail.com>
+Date:   Sun Feb 24 20:51:34 2013 -0500
+
+    autosaving: use timed message, bug#3605853
+
+--------------------------------
+
+26.2.2013: commit 1b74bdd61d4020f768e69689b00689eb2d3e527b  eing.
+
+----------------
+
+
