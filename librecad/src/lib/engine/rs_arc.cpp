@@ -1044,6 +1044,14 @@ void RS_Arc::drawVisible(RS_Painter* painter, RS_GraphicView* view,
     painter->setPen(pen);
 
 
+  /* RS_Entity::getStyleFactor seems to be useless: it only depends on line width
+   * if line width == 0  returns -1
+   * so i need a hack: 
+   * // double styleFactor = getStyleFactor(view);  */
+
+    double styleFactor = view->getStyleFactor();    /* ++++++++++++++++ new added, in SETTINGS adapt. */
+
+   std::cout<<"styleFactor "<<styleFactor<<std::endl;
 
     // create scaled pattern:
     QVector<double> da(0);
@@ -1056,7 +1064,7 @@ void RS_Arc::drawVisible(RS_Painter* painter, RS_GraphicView* view,
         while(i<pat->num){
             //        da[j] = pat->pattern[i++] * styleFactor;
             //fixme, stylefactor needed
-            da[i] =dpmm*(isReversed()? -fabs(pat->pattern[i]):fabs(pat->pattern[i]));
+            da[i] = dpmm * styleFactor * (isReversed()? -fabs(pat->pattern[i]):fabs(pat->pattern[i]));   /* +++++++++++++++ styleFactor */
             if( fabs(da[i]) < 1. ) da[i] = (da[i]>=0.)?1.:-1.;
             da[i] *= ira;
             i++;

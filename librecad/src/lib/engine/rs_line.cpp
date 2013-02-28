@@ -712,6 +712,8 @@ void RS_Line::draw(RS_Painter* painter, RS_GraphicView* view, double& patternOff
     // pattern segment length:
     double patternSegmentLength = pat->totalLength;
 
+  double styleFactor = view->getStyleFactor();    /* ++++++++++++++++ new added, in SETTINGS adapt. */
+
     // create pattern:
     RS_Vector* dp=new RS_Vector[pat->num > 0?pat->num:0];
     double* ds=new double[pat->num > 0?pat->num:0];
@@ -721,9 +723,9 @@ void RS_Line::draw(RS_Painter* painter, RS_GraphicView* view, double& patternOff
             //        ds[j]=pat->pattern[i] * styleFactor;
             //fixme, styleFactor support needed
 
-            ds[i]=dpmm*pat->pattern[i];
+            ds[i]=dpmm * styleFactor * pat->pattern[i];
             if( fabs(ds[i]) < 1. ) ds[i] = (ds[i]>=0.)?1.:-1.;
-            dp[i] = direction*fabs(ds[i]);
+            dp[i] = direction * fabs(ds[i]);
         }
     }else {
         delete[] dp;

@@ -270,11 +270,15 @@ protected:
    int AutoSnapOnGrid;
    int AutoSnapOnMiddle;
    int AutoSnapOnCenter;
-   double AutoSnapTolerance;
+   double AutoSnapRange;
    int SnapCursorDiameter;
    QColor SnapCursorColor;
+   int showSnapRange;
+   QColor snapRangeColor;
    int AutoSnapCursorSize;
    QColor AutoSnapCursorColor;
+   int showAutoSnapRange;
+   QColor autoSnapRangeColor;
    /* ++++++++++++++++ */
 };
 

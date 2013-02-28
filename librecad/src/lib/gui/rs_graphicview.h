@@ -435,6 +435,8 @@ public:
         }
 
         virtual RS_EntityContainer* getOverlayContainer(RS2::OverlayGraphics position);
+   
+   double getStyleFactor();	       /* ++++++++++++++++++++++ */
 
 protected:
 
@@ -513,6 +515,8 @@ private:
         // Map that will be used for overlaying additional items on top of the main CAD drawing
         QMap<int, RS_EntityContainer *> overlayEntities;
 
+   double lineStyleFactorGraphic;		       /* ++++++++++++++++ */
+   double lineStyleFactorPrinter;		       /* ++++++++++++++++ */
 };
 
 #endif

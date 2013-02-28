@@ -86,12 +86,35 @@ RS_GraphicView::RS_GraphicView()
                                                       "#739373")));
     RS_SETTINGS->endGroup();
 
+  RS_SETTINGS->beginGroup("/Privat");  
+  lineStyleFactorGraphic = RS_SETTINGS->readEntry("/LineStyleFactorGraphic", "1.0").toDouble();
+  lineStyleFactorPrinter = RS_SETTINGS->readEntry("/LineStyleFactorPrinter", "1.0").toDouble();
+   RS_SETTINGS->endGroup();
+  
     printPreview = false;
 
     QC_ApplicationWindow::getAppWindow()->setPreviousZoomEnable(false);
     //currentInsert = NULL;
 }
 
+/**
+ *  used for correct scaling of non-continuos linetypes
+ *  customizing in SETTINGS
+ */
+
+double RS_GraphicView::getStyleFactor()	       /* ++++++++++++++++++++++ */
+{
+  
+  if(isPrinting())
+    return lineStyleFactorPrinter;
+  else
+    {
+      if(lineStyleFactorGraphic > RS_TOLERANCE)
+	return factor.x * lineStyleFactorGraphic / 12; 
+      else
+	return 1.0;		       /* switched off */
+    }
+}
 
 
 /**

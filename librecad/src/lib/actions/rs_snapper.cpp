@@ -32,6 +32,8 @@
 #include "rs_settings.h"
 #include "rs_overlayline.h"
 
+#include "rs_painter.h"
+
 /**
  * Constructor.
  */
@@ -79,12 +81,15 @@ void RS_Snapper::init() {
    AutoSnapOnGrid = RS_SETTINGS->readEntry("/AutoSnapOnGrid", "1").toInt();
    AutoSnapOnMiddle = RS_SETTINGS->readEntry("/AutoSnapOnMiddle", "1").toInt();
    AutoSnapOnCenter = RS_SETTINGS->readEntry("/AutoSnapOnCenter", "1").toInt();
-   AutoSnapTolerance = RS_SETTINGS->readEntry("/AutoSnapTolerance", "8.88").toDouble();
+   AutoSnapRange = RS_SETTINGS->readEntry("/AutoSnapRange", "8.88").toDouble();
    SnapCursorDiameter = RS_SETTINGS->readEntry("/SnapCursorDiameter", "6").toInt();
    SnapCursorColor = RS_SETTINGS->readEntry("/SnapCursorColor", "#ffaa00");
-  
+  showSnapRange  = RS_SETTINGS->readEntry("/ShowSnapRange", "1").toInt();  
+  snapRangeColor = RS_SETTINGS->readEntry("/SnapRangeColor", "#cccccc");
    AutoSnapCursorSize = RS_SETTINGS->readEntry("/AutoSnapCursorSize", "6").toInt();
    AutoSnapCursorColor= RS_SETTINGS->readEntry("/AutoSnapCursorColor", "#ffaa00");
+  showAutoSnapRange  = RS_SETTINGS->readEntry("/ShowAutoSnapRange", "1").toInt();  
+  autoSnapRangeColor = RS_SETTINGS->readEntry("/AutoSnapRangeColor", "#cccccc");
   /* +++++++++++++++++++ */
   
   RS_SETTINGS->beginGroup("/Appearance");
@@ -644,7 +649,7 @@ RS_Vector RS_Snapper::snapAuto(const RS_Vector& coord)
 	}
     }
   
-  if ( mindist > AutoSnapTolerance * 4 / graphicView->getFactor().x)
+  if ( mindist > AutoSnapRange * 4 / graphicView->getFactor().x)
     {	
       autoSnapCursorType = 0;
       
@@ -652,7 +657,7 @@ RS_Vector RS_Snapper::snapAuto(const RS_Vector& coord)
 	{	     
 	  t = snapGrid(coord);
 	  
-	  if(coord.distanceTo(t) > AutoSnapTolerance * 4 / graphicView->getFactor().x )
+	  if(coord.distanceTo(t) > AutoSnapRange * 4 / graphicView->getFactor().x )
 	    vec = snapFree(coord);
 	  else
 	    vec = t;
@@ -951,29 +956,35 @@ void RS_Snapper::drawSnapper()
 		  circle=new RS_Circle(NULL, 
 				       RS_CircleData(snapCoord, 
 						     SnapCursorDiameter/graphicView->getFactor().x));
+		  pen->setScreenWidth(1);
+		  circle->setPen(*pen);
+		  container->addEntity(circle);
 		}
-	      else
+	      else if(showSnapRange)
 		{
 		  //std::cout<< "graphicView->getFactor().x = "<< graphicView->getFactor().x<< "\n";
 		  
 		  double r = snapRange * 4 / (graphicView->getFactor().x) ;
 		  
 		  circle=new RS_Circle(NULL, RS_CircleData(snapCoord, r));
-		  pen = new RS_Pen(RS_Color("#888888"), RS2::Width00, RS2::DashDotLine2);
+		   pen = new RS_Pen(RS_Color(snapRangeColor), RS2::Width00, RS2::SolidLine);
+		   // ???->fillCircle(snapCoord, r, RS_Color("#ddeeff"));
+		  pen->setScreenWidth(1);
+		  circle->setPen(*pen);
+		  container->addEntity(circle);
 		}
-	      
-	      pen->setScreenWidth(1);
-	      circle->setPen(*pen);
-	      container->addEntity(circle);
 	    }
 	  else if (autoSnapCursorType == 0)
 	    {
-	      double r = AutoSnapTolerance * 4 / (graphicView->getFactor().x) ;
-	      pen = new RS_Pen(RS_Color("#888888"), RS2::Width00, RS2::DotLine2);
-	      circle=new RS_Circle(NULL, RS_CircleData(snapCoord, r));
-	      pen->setScreenWidth(1);
-	      circle->setPen(*pen);
-	      container->addEntity(circle);
+	      if(showAutoSnapRange)
+		{
+		  double r = AutoSnapRange * 4 / (graphicView->getFactor().x) ;
+		  pen = new RS_Pen(RS_Color(autoSnapRangeColor), RS2::Width00, RS2::SolidLine);
+		  circle=new RS_Circle(NULL, RS_CircleData(snapCoord, r));
+		  pen->setScreenWidth(1);
+		  circle->setPen(*pen);
+		  container->addEntity(circle);
+		}
 	    }
 	  
 	  else if (autoSnapCursorType == 2)

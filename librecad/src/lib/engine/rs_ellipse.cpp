@@ -1538,6 +1538,8 @@ void RS_Ellipse::drawVisible(RS_Painter* painter, RS_GraphicView* view, double& 
         return;
     }
 
+    double styleFactor = view->getStyleFactor();    /* ++++++++++++++++ new added, in SETTINGS adapt. */
+
     // Pattern:
     RS_LineTypePattern* pat;
     if (isSelected()) {
@@ -1564,7 +1566,7 @@ void RS_Ellipse::drawVisible(RS_Painter* painter, RS_GraphicView* view, double& 
     if(pat->num>0){
         double dpmm=static_cast<RS_PainterQt*>(painter)->getDpmm();
         while( i<pat->num){
-            ds[i]= dpmm * pat->pattern[i] ;//pattern length
+            ds[i]= dpmm * styleFactor * pat->pattern[i] ;//pattern length
             if(fabs(ds[i])<1.)
                 ds[i]=(ds[i]>=0.)?1.:-1.;
             i++;
