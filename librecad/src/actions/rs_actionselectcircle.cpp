@@ -62,25 +62,25 @@ QAction* RS_ActionSelectCircle::createGUIAction(RS2::ActionType type, QObject* /
     if (type==RS2::ActionSelectInsideCircle) 
      {
         action = new QAction(tr("Select Inside Circle"),  NULL);
-		action->setIcon(QIcon(":/extui/selectwindow.png"));
+		action->setIcon(QIcon(":/extui/selectinsidecircle.png"));
         //action->zetStatusTip(tr("Selects all Entities in a given Circle"));
     } 
    else if (type==RS2::ActionDeselectInsideCircle)
      {
         action = new QAction(tr("Deselect Inside Circle"), NULL);
-		action->setIcon(QIcon(":/extui/deselectwindow.png"));
+		action->setIcon(QIcon(":/extui/deselectinsidecircle.png"));
         //action->zetStatusTip(tr("Deselects all Entities in a given Circle"));		
 	}
 else if (type==RS2::ActionSelectOutsideCircle)
      {
 	action = new QAction(tr("Select Outside Circle"),  NULL);
-	action->setIcon(QIcon(":/extui/selectwindow.png"));
+	action->setIcon(QIcon(":/extui/selectoutsidecircle.png"));
 	//action->zetStatusTip(tr("Selects all Entities in a given Circle"));
      }
    else
        {
 	  action = new QAction(tr("Deselect Outside Circle"), NULL);
-	  action->setIcon(QIcon(":/extui/deselectwindow.png"));
+	  action->setIcon(QIcon(":/extui/deselectoutsidecircle.png"));
 	  //action->zetStatusTip(tr("Deselects all Entities in a given Circle"));		
 	}
  return action;

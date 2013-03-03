@@ -61,13 +61,13 @@ QAction* RS_ActionSelectWindow::createGUIAction(RS2::ActionType type, QObject* /
    else if (type==RS2::ActionDeselectOutsideWindow)   /* ++++++++++++++++++++++ */
      {
         action = new QAction(tr("Deselect Outside Window"), NULL);
-	action->setIcon(QIcon(":/extui/deselectwindow.png"));
+	action->setIcon(QIcon(":/extui/deselectoutsidewindow.png"));
         //action->zetStatusTip(tr("Deselects all Entities in a given Circle"));		
      }
    else if (type==RS2::ActionSelectOutsideWindow)   /* +++++++++++++++++++++++ */
      {
 	action = new QAction(tr("Select Outside Window"),  NULL);
-	action->setIcon(QIcon(":/extui/selectwindow.png"));
+	action->setIcon(QIcon(":/extui/selectoutsidewindow.png"));
 	//action->zetStatusTip(tr("Selects all Entities in a given Circle"));
      }
 

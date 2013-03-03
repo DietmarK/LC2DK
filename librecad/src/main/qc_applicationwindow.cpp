@@ -866,7 +866,8 @@ void QC_ApplicationWindow::initActions(void)
     action->setIcon(QIcon(":/main/editclear.png"));
     {//added commandline shortcuts, feature request# 3437106
         QList<QKeySequence> commandLineShortcuts;
-        commandLineShortcuts<<QKeySequence(Qt::CTRL + Qt::Key_M)<<QKeySequence( Qt::Key_Colon)<<QKeySequence(Qt::Key_Space);
+      commandLineShortcuts<<QKeySequence(Qt::CTRL + Qt::Key_M)<<QKeySequence( Qt::Key_Colon)<<QKeySequence(Qt::Key_Space) 
+	 << QKeySequence(tr("Alt+Left")) << QKeySequence(tr("Alt+Right"));
         action->setShortcuts(commandLineShortcuts);
     }
         //action->zetStatusTip(tr("Focus on Command Line"));
@@ -1296,6 +1297,15 @@ void QC_ApplicationWindow::initActions(void)
                                         actionHandler);
     menu->addAction(action);
     connect(this, SIGNAL(windowsChanged(bool)), action, SLOT(setEnabled(bool)));
+  
+  				       /* ++++++++++++++++++++++++++ */
+  QList<QKeySequence> MEShortcuts;
+  //MEShortcuts<<QKeySequence(Qt::Alt + Qt::Key_L)<<QKeySequence(Qt::CTRL + Qt::Key_.);
+  
+  MEShortcuts<<QKeySequence(tr("Alt+Left, Alt+Right"));
+  //action->setShortcuts(MEShortcuts);
+  				       /* ++++++++++++++++++++++++++++ */
+  
     action = actionFactory.createAction(RS2::ActionModifyAttributes,
                                         actionHandler);
     menu->addAction(action);

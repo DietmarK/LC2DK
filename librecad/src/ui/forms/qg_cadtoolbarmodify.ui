@@ -863,8 +863,9 @@
    <property name="toolTip">
     <string>move absolute zero</string>
    </property>
-   <property name="text">
-    <string extracomment="+++++++++++++++++++">NULL</string>
+   <property name="icon">
+   <iconset resource="../../../res/extui/extui.qrc">
+    <normaloff>:/extui/modifymovezero.png</normaloff>:/extui/modifymovezero.png</iconset>
    </property>
   </widget>
  </widget>

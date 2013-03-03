@@ -54,7 +54,7 @@ QAction* RS_ActionModifyMove::createGUIAction(RS2::ActionType type, QObject* /*p
    else                                /* ++++++++++++++++++ */
      {	
 	action = new QAction(tr("&Move absolute zero"),  NULL);
-	action->setIcon(QIcon(":/extui/modifymove.png"));
+	action->setIcon(QIcon(":/extui/modifymovezero.png"));
 	//action->zetStatusTip(tr("Move absolute zero"));
      }   
    

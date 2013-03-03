@@ -494,7 +494,11 @@
     </size>
    </property>
    <property name="toolTip">
-    <string>(De-)Select Circles / Arcs</string>
+    <string>(De-)select circles with the same size/ Arcs</string>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../res/extui/extui.qrc">
+     <normaloff>:/extui/selectcircles.png</normaloff>:/extui/selectcircles.png</iconset>
    </property>
    <property name="text">
     <string>c</string>
@@ -518,6 +522,10 @@
    <property name="toolTip">
     <string>(De-) select circles on pitch circle</string>
    </property>
+   <property name="icon">
+    <iconset resource="../../../res/extui/extui.qrc">
+     <normaloff>:/extui/selectcirclespitch.png</normaloff>:/extui/selectcirclespitch.png</iconset>
+   </property>
    <property name="text">
     <string>cC</string>
    </property>
@@ -538,7 +546,11 @@
     </size>
    </property>
    <property name="toolTip">
-    <string>(De-) select Circles in Window</string>
+    <string>(De-) select circles with same size in window</string>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../res/extui/extui.qrc">
+     <normaloff>:/extui/selectcirclesinwindow.png</normaloff>:/extui/selectcirclesinwindow.png</iconset>
    </property>
    <property name="text">
     <string>ciw</string>
@@ -562,6 +574,10 @@
    <property name="toolTip">
     <string>deselect Outside Window</string>
    </property>
+   <property name="icon">
+     <iconset resource="../../../res/extui/extui.qrc">
+     <normaloff>:/extui/deselectoutsidewindow.png</normaloff>:/extui/deselectoutsidewindow.png</iconset>
+   </property>
    <property name="text">
     <string>dow</string>
    </property>
@@ -584,6 +600,11 @@
    <property name="toolTip">
     <string>select Outside Window</string>
    </property>
+   <property name="icon">
+          <iconset resource="../../../res/extui/extui.qrc">
+	  <normaloff>:/extui/selectoutsidewindow.png</normaloff>:/extui/selectoutsidewindow.png</iconset>
+   </property>
+		  
    <property name="text">
     <string>sow</string>
    </property>
@@ -605,6 +626,10 @@
    </property>
    <property name="toolTip">
     <string>select Inside Circle</string>
+   </property>
+   <property name="icon">
+          <iconset resource="../../../res/extui/extui.qrc">
+	  <normaloff>:/extui/selectinsidecircle.png</normaloff>:/extui/selectinsidecircle.png</iconset>
    </property>
    <property name="text">
     <string>sic</string>
@@ -628,6 +653,10 @@
    <property name="toolTip">
     <string>Select Outside Circle</string>
    </property>
+   <property name="icon">
+          <iconset resource="../../../res/extui/extui.qrc">
+	  <normaloff>:/extui/selectoutsidecircle.png</normaloff>:/extui/selectoutsidecircle.png</iconset>
+   </property>
    <property name="text">
     <string>soc</string>
    </property>
@@ -650,6 +679,10 @@
    <property name="toolTip">
     <string>deselect Inside Circle</string>
    </property>
+   <property name="icon">
+          <iconset resource="../../../res/extui/extui.qrc">
+	  <normaloff>:/extui/deselectinsidecircle.png</normaloff>:/extui/deselectinsidecircle.png</iconset>
+   </property>
    <property name="text">
     <string>dic</string>
    </property>
@@ -671,6 +704,10 @@
    </property>
    <property name="toolTip">
     <string>deselect Outside Circle</string>
+   </property>
+   <property name="icon">
+          <iconset resource="../../../res/extui/extui.qrc">
+	  <normaloff>:/extui/deselectoutsidecircle.png</normaloff>:/extui/deselectoutsidecircle.png</iconset>
    </property>
    <property name="text">
     <string>doc</string>

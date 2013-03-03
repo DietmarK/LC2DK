@@ -373,11 +373,17 @@ RS_Vector RS_Snapper::snapPoint(QMouseEvent* e)
       else if (snapMode.snapGrid) 
 	{
 	  vec = graphicView->getGrid()->snapGrid(mouseCoord);
+
+	  //std::cout<<"else if (snapMode.snapGrid) vec "<<vec<<"  ds2 "<<ds2<<"  ds2Min "<<ds2Min<<std::endl;
 	  
-	  if (vec.valid && ds2 < ds2Min)
+	  if (vec.valid)
 	    {
-	      ds2Min = ds2;
-	      snapSpot = vec;
+	      if( ds2 < ds2Min)
+		ds2 = vec.distanceTo(mouseCoord);
+		{
+		  ds2Min = ds2;
+		  snapSpot = vec;
+		}
 	    }
 	}			       /* if (snapMode.snapAuto) */
       

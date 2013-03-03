@@ -1,5 +1,14 @@
 <RCC>
     <qresource prefix="/extui">
+        <file>selectoutsidewindow.png</file>
+        <file>deselectoutsidewindow.png</file>
+        <file>selectinsidecircle.png</file>
+        <file>deselectinsidecircle.png</file>
+        <file>selectoutsidecircle.png</file>
+        <file>deselectoutsidecircle.png</file>
+        <file>selectcircles.png</file>
+        <file>selectcirclespitch.png</file>
+        <file>selectcirclesinwindow.png</file>
         <file>python2.4-16.png</file>
         <file>python2.4-32.png</file>
         <file>align_bc.png</file>
@@ -120,6 +129,7 @@
         <file>modifyexplodetext.png</file>
         <file>modifymirror.png</file>
         <file>modifymove.png</file>
+        <file>modifymovezero.png</file>
         <file>order_bottom.png</file>
         <file>order_top.png</file>
         <file>order_raise.png</file>

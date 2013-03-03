@@ -55,17 +55,17 @@ QAction* RS_ActionSelectCircles::createGUIAction(RS2::ActionType type, QObject* 
    if (type==RS2::ActionSelectCircles)       /* 1 */
      {
 	action = new QAction(tr("(de-)select circles"), NULL);
-	//action->setIcon(QIcon(":/extui/selectlayer.png"));	
+	action->setIcon(QIcon(":/extui/selectcircles.png"));	
      }
    else if (type==RS2::ActionSelectCirclesOnCircle)    /* 2 */
      {
 	action = new QAction(tr("(de-)select circles on pitch circle"), NULL);
-	//action->setIcon(QIcon(":/extui/selectlayer.png"));	
+	action->setIcon(QIcon(":/extui/selectcirclespitch.png"));	
      }
    else		   /* RS2::ActionSelectCirclesInWindow : 3 */
      {
-	action = new QAction(tr("(de-)select circles in window"), NULL);
-	//action->setIcon(QIcon(":/extui/selectlayer.png"));
+       action = new QAction(tr("(de-)select circles in window"), NULL);
+       action->setIcon(QIcon(":/extui/selectcirclesinwindow.png"));
      }
    
    return action;
