@@ -356,10 +356,8 @@ void RS_EntityContainer::selectCircle(RS_Vector cc, double radius,
 	e!=NULL;
 	e=nextEntity(RS2::ResolveNone)) 
      {
-	
         included = false;
 	dist = 0;
-//	double re;
 	
         if (e->isVisible()) 
 	  {	     
@@ -390,13 +388,6 @@ void RS_EntityContainer::selectCircle(RS_Vector cc, double radius,
 		       if(vs.hasValid())
 			 included = false;
 		    }
-		  
-		  //std::cerr << "rs_entitycontainer: radius=" << radius << "     dist=" << dist ;
-
-		  //e->getNearestPointOnEntity( cc, true, &dist);
-		  
-		  //std::cerr << "    distNPOE=" << dist << "\n";
-
 	       }
 	  }
    
@@ -986,8 +977,6 @@ RS_Entity* RS_EntityContainer::firstEntity(RS2::ResolveLevel level) {
 	    e = entities.first();
 	    bool sub = false;
 
-	    // std::cout<<"firstEntity : "<<evaluateSnapSettings(e)<<"\n";
-	    
 	    if (e!=NULL && e->isContainer())
 	      {
 		if(e->rtti()==RS2::EntityBlock || e->rtti()==RS2::EntityFontChar || e->rtti()==RS2::EntityContainer
@@ -1275,8 +1264,6 @@ RS_Entity* RS_EntityContainer::nextEntity(RS2::ResolveLevel level) {
 	  {
 	    bool sub = false;
 
-	    //evaluateSnapSettings(e);
-	    
 	    if(e->rtti()==RS2::EntityBlock || e->rtti()==RS2::EntityFontChar || e->rtti()==RS2::EntityContainer
 	       || e->rtti()==RS2::EntityVertex  || e->rtti()==RS2::EntityImage)
 	                    sub = true;
@@ -1313,7 +1300,6 @@ RS_Entity* RS_EntityContainer::nextEntity(RS2::ResolveLevel level) {
 	      }
 	    else
 	      {
-		//std::cout<<"container ausgelassen : ID "<<e->getId()<<"  rtti  "<<e->rtti()<<"\n";;
 		e = nextEntity(level);
 	      }
 	  }	       /* if (e!=NULL && e->isContainer()) */
@@ -1472,114 +1458,6 @@ QListIterator<RS_Entity*> RS_EntityContainer::createIterator() {
     return QListIterator<RS_Entity*>(entities);
 }
 
-/* ++++++++++++++++++++++++++ */
-
-/* i don't like that, but i see no other way, see next comment */
-
-int SnapOnDimension;
-int SnapOnSpline;
-int SnapOnPolyline;
-int SnapOnInsert;
-int SnapOnText; 
-int SnapOnHatch;
-int SnapDK;
-
-/**
- * read snap-relevant settings from RS_SETTINGS 
- * we need global variables, because of making entitycontainer as const (in LC1 this was not necessary)
- * someone could create a new object for this settings ? 
-*/
-void RS_EntityContainer::readSnapSettings() const
-{
-   RS_SETTINGS->beginGroup("/Privat");
-   
-   ::SnapOnDimension = RS_SETTINGS->readEntry("/SnapOnDimension", "0").toInt();
-   ::SnapOnSpline = RS_SETTINGS->readEntry("/SnapOnSpline", "0").toInt();
-   ::SnapOnPolyline = RS_SETTINGS->readEntry("/SnapOnPolyline", "0").toInt();
-   ::SnapOnInsert = RS_SETTINGS->readEntry("/SnapOnInsert", "0").toInt();
-   ::SnapOnText = RS_SETTINGS->readEntry("/SnapOnText", "0").toInt();
-   ::SnapOnHatch = RS_SETTINGS->readEntry("/SnapOnHatch", "0").toInt();   
-   
-   ::SnapDK = RS_SETTINGS->readEntry("/SnapDK", "0").toInt();
-   
-   RS_SETTINGS->endGroup();   
-}
-
-/**
- * @return true if current settings allow snap on @param
- * we often need it (today not anymore, it was in the past, one of my earlier experiments with snapper)
- */
-bool RS_EntityContainer::evaluateSnapSettings(RS_Entity* en) const
-{
-  bool b = false;
-  
-  if(en == NULL)  return b;
-  
-   int et = en->rtti();	       /* EntityType */
-   int pt = 0;
-   int ppt = 0;
-   int pppt = 0;
-   //int ppppt = 0;
-  
-  if(en->getParent() != NULL)
-    {
-      RS_Entity *p = en->getParent();
-      pt = p->rtti(); 
-      
-      if(p->getParent() != NULL)     /* other generations */
-	{
-	  RS_Entity *pp = p->getParent();
-	  ppt = pp->rtti();
-	  if(pp->getParent() != NULL)
-	    {
-	      //RS_Entity *ppp = pp->getParent();
-	      pppt = pp->getParent()->rtti();		  
-	      // next generation, probably not needed......
-	      // if(ppp->getParent() != NULL)
-	      //   ppppt = ppp->getParent()->->rtti();
-	    }
-	}
-    }
-  
-    if (en->isVisible()) 
-     {	
-	if (pt == RS2::EntityGraphic && et < RS2::EntityMText)  b = true;	       /* 5  <16  simple entities, but no image ... */
-	
-	else if (::SnapOnInsert && pppt != RS2::EntityText && pppt != RS2::EntityMText
-		 && ( pt == RS2::EntityInsert || ppt == RS2::EntityInsert))  b = true;  /* 17 4 insert */
-	
-	//else if (::SnapOnPolyline && pt == RS2::EntityPolyline && pppt != RS2::EntityText)  b = true;  /* polyline, but not text */
-	
-	else if (::SnapOnPolyline && pppt != RS2::EntityText && pppt != RS2::EntityMText
-		 && (pt == RS2::EntityPolyline || ppt == RS2::EntityPolyline || ppt == RS2::EntityPolyline))  b = true;  /* polyline */
-	
-	else if (::SnapOnText && (et == RS2::EntityText || pt == RS2::EntityText
-				  || ppt == RS2::EntityText || pppt == RS2::EntityText
-				  || et == RS2::EntityMText || pt == RS2::EntityMText
-				  || ppt == RS2::EntityMText || pppt == RS2::EntityMText))  b = true;     /* 17 text, in dimensions too */
-				       /* alle generationen abfragen ! */
-
-	else if (::SnapOnSpline && (et == RS2::EntitySpline || pt == RS2::EntitySpline || ppt == RS2::EntitySpline))  b = true;   /* 26 spline */
-	
-	else if (::SnapOnHatch && (et == RS2::EntityHatch || pt == RS2::EntityHatch || ppt == RS2::EntityHatch )) b = true;           /* 24 hatch */
-	
-	else if (::SnapOnDimension && ((et> RS2::EntityText && et < RS2::EntityHatch ) 
-				       || (pt > RS2::EntityText && pt < RS2::EntityHatch ))) b = true;   /* dimension lines, arrows */
-     }
-     
-   if(1) 
-     {     std::cout<<"\natom: " << (int)en->isAtomic() << "   id: " <<  en->getId() << "   rtti: " << et << "   parent: "<< pt 
-	  << "   pp: "<< ppt <<"   ppp: " << pppt << " return " << b << "\n";
-	// std::cout<<"  pppp: "<< ppppt
-     }
-   
-     
-   return b;
-}
-
-
-/* +++++++++++++++++++++++++ */
-
 
 
 /**
@@ -1603,25 +1481,19 @@ RS_Vector RS_EntityContainer::getNearestEndpoint(const RS_Vector& coord,
      {
        if(SnapDK)
 	  {
+	    point = en->getNearestEndpoint(coord, &curDist);
 	    
-	    // std::cout<< " oooooooo  getNearestEndpoint, for...   ID "<<en->getId()<<"\n";
-	    
-	     if(1) // (evaluateSnapSettings(en)) 
-	       {
-		  point = en->getNearestEndpoint(coord, &curDist);
-		  
-		  if (point.valid && curDist < minDist) 
-		    {
-		      //std::cout<<"getNearestEndpoint e "<<en->rtti()<<"  d = "<<curDist<<"\n";
-		      
-		       closestPoint = point;
-		       minDist = curDist;
-		       if (dist!=NULL) 
-			 {
-			    *dist = curDist;
-			 }
-		    }
-	       }	      
+	    if (point.valid && curDist < minDist) 
+	      {
+		//std::cout<<"getNearestEndpoint e "<<en->rtti()<<"  d = "<<curDist<<"\n";
+		
+		closestPoint = point;
+		minDist = curDist;
+		if (dist!=NULL) 
+		  {
+		    *dist = curDist;
+		  }
+	      }	      
 	  }  
 	else
 	  {	       
@@ -1678,15 +1550,6 @@ RS_Vector RS_EntityContainer::getNearestEndpoint(const RS_Vector& coord,
    RS_Vector closestPoint(false);  // closest found endpoint
    RS_Vector point;                // endpoint found
    
-   //QListIterator<RS_Entity> it = createIterator();
-   //RS_Entity* en;
-   //while ( (en = it.current()) != NULL ) {
-   //    ++it;
-   // 
-   
-   // unsigned i0=0;
-   
-   // readSnapSettings();
    
   for (RS_Entity* en = const_cast<RS_EntityContainer*>(this)->firstEntity(RS2::ResolveAllForSnap);
        en != NULL;
@@ -1696,24 +1559,21 @@ RS_Vector RS_EntityContainer::getNearestEndpoint(const RS_Vector& coord,
        
 	if (SnapDK )	 
 	  {
-	     if (1)  //evaluateSnapSettings(en)) 
-	       {
-		  point = en->getNearestEndpoint(coord, &curDist);
-		  
-		  if (point.valid && curDist<minDist) 
-		    {
-		       closestPoint = point;
-		       minDist = curDist;
-		       if (dist!=NULL) 
-			 {
-			    *dist = curDist;
-			 }
-		     if(pEntity!=NULL)
-		       {
-			  *pEntity=en;
-		       }
-		    }
-	       }	      
+	    point = en->getNearestEndpoint(coord, &curDist);
+	    
+	    if (point.valid && curDist<minDist) 
+	      {
+		closestPoint = point;
+		minDist = curDist;
+		if (dist!=NULL) 
+		  {
+		    *dist = curDist;
+		  }
+		if(pEntity!=NULL)
+		  {
+		    *pEntity=en;
+		  }
+	      }
 	  }  
 	else
 	  {	       
@@ -1769,21 +1629,13 @@ RS_Vector RS_EntityContainer::getNearestPointOnEntity(const RS_Vector& coord,
                                                       bool onEntity, double* dist, RS_Entity** entity)const 
 {
    
-   RS_Vector point(false);
-   
-   //RS_Entity* en = const_cast<RS_EntityContainer*>(this)->getNearestEntity(coord, dist, RS2::ResolveNone);   // RS2::ResolveAllForSnap ?
+  RS_Vector point(false);
    
   RS_Entity* en = const_cast<RS_EntityContainer*>(this)->getNearestEntity(coord, dist, RS2::ResolveAllForSnap); 
    
-   // readSnapSettings();
-   
-   if (SnapDK)
+  if (SnapDK)
      {
-	// if (en!=NULL && en->isVisible()) 
-
-	//  if (evaluateSnapSettings(en))  ??
-	
-	if (1) // evaluateSnapSettings(en))
+	if (en!=NULL ) 
 	  {		  
 	     point = en->getNearestPointOnEntity(coord, onEntity, dist, entity);		       
 	  }
@@ -1928,24 +1780,19 @@ RS_Vector RS_EntityContainer::getNearestMiddle(const RS_Vector& coord,
    RS_Vector closestPoint(false);  // closest found endpoint
    RS_Vector point;                // endpoint found
    
-  // readSnapSettings();
-   
   for (RS_Entity* en = const_cast<RS_EntityContainer*>(this)->firstEntity(RS2::ResolveAllForSnap);
        en != NULL;
        en = const_cast<RS_EntityContainer*>(this)->nextEntity(RS2::ResolveAllForSnap)) 
     {
 	if (SnapDK )
 	  {
-	     if (1)  // evaluateSnapSettings(en)) 
-	       {
-		  point = en->getNearestMiddle(coord, &curDist, middlePoints);  // , middlePoints);  neu in ...-2
-
-		  if (point.valid && curDist<minDist)
-		    {		       
-		       closestPoint = point;
-		       minDist = curDist;
-		    }		  
-	       }	 
+	    point = en->getNearestMiddle(coord, &curDist, middlePoints);
+	    
+	    if (point.valid && curDist<minDist)
+	      {		       
+		closestPoint = point;
+		minDist = curDist;
+	      }		  
 	  }  
 	else
 	  {	       
@@ -1993,9 +1840,6 @@ RS_Vector RS_EntityContainer::getNearestDist(double distance,
   RS_Vector point(false);
   RS_Entity* closestEntity;
 
-   // readSnapSettings();
-   
-  //closestEntity = getNearestEntity(coord, NULL, RS2::ResolveNone);  // RS2::ResolveAllForSnap ?
   closestEntity = getNearestEntity(coord, dist, RS2::ResolveAllForSnap);
 
     if (closestEntity != NULL) 
@@ -2028,13 +1872,6 @@ RS_Vector RS_EntityContainer::getNearestIntersection(const RS_Vector& coord,
    RS_VectorSolutions sol;
    RS_Entity* closestEntity;
    
-   // readSnapSettings();
-   
-  // closestEntity = getNearestEntity(coord, NULL, RS2::ResolveAllButTexts);   /* ?????? bug in nextEntity ! */
-
-  // closestEntity = getNearestEntity(coord, NULL, RS2::ResolveAll);
-  
-  // in LC1:   
   closestEntity = getNearestEntity(coord, NULL, RS2::ResolveAllForSnap);
    
    if (closestEntity!=NULL)
@@ -2045,34 +1882,31 @@ RS_Vector RS_EntityContainer::getNearestIntersection(const RS_Vector& coord,
 	  {
 	     if (SnapDK)
 	       {
-		  if(1)  // (evaluateSnapSettings(en)) 
-		    {
-		       sol = RS_Information::getIntersection(closestEntity, en, true);
-  		       
-		       if(sol.hasValid())
-			 {			    
-			    point=sol.getClosest(coord,&curDist,NULL);
-			    
-			    for (int i=0; i<4; i++)
-			      {				 
-				 point = sol.get(i);
-				 if (point.valid)
-				   {				      
-				      curDist = coord.distanceTo(point);
-				      
-				      if (curDist<minDist)
-					{					   
-					   closestPoint = point;
-					   minDist = curDist;
-					   if (dist!=NULL)
-					     {						
-						*dist = curDist;
-					     }					   
-					}	/* if (curDist<minDist) */
-				   }	     /* if (point.valid) */
-			      }	         /*  for (int i=0; i<4; i++) */
-			 }            /* if(sol.hasValid()) */
-		    }	          /* if (evaluateSnapSettings(en))  */
+		 sol = RS_Information::getIntersection(closestEntity, en, true);
+		 
+		 if(sol.hasValid())
+		   {			    
+		     point=sol.getClosest(coord,&curDist,NULL);
+		     
+		     for (int i=0; i<4; i++)
+		       {				 
+			 point = sol.get(i);
+			 if (point.valid)
+			   {				      
+			     curDist = coord.distanceTo(point);
+			     
+			     if (curDist<minDist)
+			       {					   
+				 closestPoint = point;
+				 minDist = curDist;
+				 if (dist!=NULL)
+				   {						
+				     *dist = curDist;
+				   }					   
+			       }	/* if (curDist<minDist) */
+			   }	     /* if (point.valid) */
+		       }	         /*  for (int i=0; i<4; i++) */
+		   }            /* if(sol.hasValid()) */
 	       }  
 	     else
 	       {	       
@@ -2190,7 +2024,6 @@ double RS_EntityContainer::getDistanceToPoint(const RS_Vector& coord,
   RS_Entity* closestEntity = NULL;    // closest entity found
   RS_Entity* subEntity = NULL;
   
-  //int k=0;
   for (RS_Entity* e =const_cast<RS_EntityContainer*>(this)-> firstEntity(level);
        e != NULL;
        e =const_cast<RS_EntityContainer*>(this)-> nextEntity(level))
@@ -2208,22 +2041,11 @@ double RS_EntityContainer::getDistanceToPoint(const RS_Vector& coord,
 	  if (curDist < minDist) 
 	    {
 	      if (level!=RS2::ResolveAll)
-		{
 		  closestEntity = e;
-                }
 	      else 
-		{
 		  closestEntity = subEntity;
-                }
 	      
 	      minDist = curDist;
-	      
-	      //std::cout<<"getDistanceToPoint if e "<<closestEntity->rtti()<<"  d = "<<curDist<<"\n";
-	    }
-	  else
-	    { 
-	      //std::cout<<"getDistanceToPoint else e "<<e->rtti()<<"  d = "<<curDist<<"\n";
-	      ;  
 	    }
         }
     }
