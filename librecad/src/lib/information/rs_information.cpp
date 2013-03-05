@@ -207,7 +207,7 @@ RS_VectorSolutions RS_Information::getIntersection(RS_Entity* e1,
 
     RS_VectorSolutions ret;
     double tol = 1.0e-4;
-
+  
    if (e1==NULL || e2==NULL ) 
      {	
 	RS_DEBUG->print("RS_Information::getIntersection() for NULL entities");
@@ -251,8 +251,52 @@ RS_VectorSolutions RS_Information::getIntersection(RS_Entity* e1,
     }
     const auto&& qf1=e1->getQuadratic();
     const auto&& qf2=e2->getQuadratic();
-    ret=LC_Quadratic::getIntersection(qf1,qf2);
-    RS_VectorSolutions ret2;
+
+  				       /* +++++++++++++++++++++++++++++ */
+// getIntersection circle - circle is buggy (if both have same x-value),
+// (same with getIntersection arc - arc ),
+// let us use the old code from LC1:
+  
+  RS_Entity* te1 = e1;
+  RS_Entity* te2 = e2;
+  RS_Arc a1(NULL, RS_ArcData(RS_Vector(0.0,0.0), 1.0, 0.0, 2*M_PI, false));
+  RS_Arc a2(NULL, RS_ArcData(RS_Vector(0.0,0.0), 1.0, 0.0, 2*M_PI, false));
+  
+  if(e1->rtti()==RS2::EntityCircle)
+    {
+      RS_Circle* c = (RS_Circle*)e1;
+      
+      RS_ArcData data(c->getCenter(), c->getRadius(), 0.0, 2*M_PI, false);
+      a1.setData(data);
+      
+      te1 = &a1;
+    }
+  
+  if(e2->rtti()==RS2::EntityCircle)
+    {
+      RS_Circle* c = (RS_Circle*)e2;
+      
+      RS_ArcData data(c->getCenter(), c->getRadius(), 0.0, 2*M_PI, false);
+      a2.setData(data);
+      
+      te2 = &a2;
+    }
+  
+  if (te1->rtti()==RS2::EntityArc &&
+      te2->rtti()==RS2::EntityArc) 
+    {
+      //std::cout<<"-------Arc X Arc \n";
+      ret = getIntersectionArcArc((RS_Arc*)te1, (RS_Arc*)te2);
+    } 
+  else 
+    {
+      				       /* ++++++++++++++++++++++++++ LC2 code */
+  
+      ret=LC_Quadratic::getIntersection(qf1,qf2);
+    }
+  
+  
+  RS_VectorSolutions ret2;
     for(int i=0;i<ret.getNumber();i++) {
         if ( ! ret.get(i).valid) continue;
         if (onEntities==true) {
