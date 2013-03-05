@@ -96,6 +96,7 @@
 #include "qc_plugininterface.h"
 #include "rs_commands.h"
 
+#include "rs_actionmodifyentity.h"	       /* +++++++++++++++ */
 
 QC_ApplicationWindow* QC_ApplicationWindow::appWindow = NULL;
 
@@ -252,16 +253,18 @@ void QC_ApplicationWindow::loadPlugins() {
     for (int i = 0; i < lst.size(); ++i) {
         QDir pluginsDir(lst.at(i));
         foreach (QString fileName, pluginsDir.entryList(QDir::Files)) {
-            QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
+	  
+	  QPluginLoader pluginLoader(pluginsDir.absoluteFilePath(fileName));
             QObject *plugin = pluginLoader.instance();
             if (plugin) {
                 QC_PluginInterface *pluginInterface = qobject_cast<QC_PluginInterface *>(plugin);
                 if (pluginInterface) {
                     loadedPlugins.append(pluginInterface);
                     PluginCapabilities pluginCapabilities=pluginInterface->getCapabilities();
-                    foreach (PluginMenuLocation loc,  pluginCapabilities.menuEntryPoints) {
+		    foreach (PluginMenuLocation loc,  pluginCapabilities.menuEntryPoints) {
                         QAction *actpl = new QAction(loc.menuEntryActionName, plugin);
                         actpl->setData(loc.menuEntryActionName);
+		      
                         connect(actpl, SIGNAL(triggered()), this, SLOT(execPlug()));
                         connect(this, SIGNAL(windowsChanged(bool)), actpl, SLOT(setEnabled(bool)));
                         QMenu *atMenu = findMenu("/"+loc.menuEntryPoint, menuBar()->children(), "");
@@ -860,14 +863,13 @@ void QC_ApplicationWindow::initActions(void)
     // RVT_PORT menu->insertItem(tr("Vie&ws"), createDockWindowMenu(NoToolBars));
     // RVT_PORT menu->insertItem(tr("Tool&bars"), createDockWindowMenu(OnlyToolBars));
 
-
     // tr("Focus on Command Line")
     action = new QAction(tr("Focus on &Command Line"), this);
     action->setIcon(QIcon(":/main/editclear.png"));
     {//added commandline shortcuts, feature request# 3437106
         QList<QKeySequence> commandLineShortcuts;
       commandLineShortcuts<<QKeySequence(Qt::CTRL + Qt::Key_M)<<QKeySequence( Qt::Key_Colon)<<QKeySequence(Qt::Key_Space) 
-	 << QKeySequence(tr("Alt+Left")) << QKeySequence(tr("Alt+Right"));
+	 << QKeySequence(tr("Alt+Left")); // << QKeySequence(tr("Alt+Right"));
         action->setShortcuts(commandLineShortcuts);
     }
         //action->zetStatusTip(tr("Focus on Command Line"));
@@ -896,7 +898,7 @@ void QC_ApplicationWindow::initActions(void)
     menu->addAction(action);
     connect(this, SIGNAL(windowsChanged(bool)), action, SLOT(setEnabled(bool)));
    
-      /* +++++++++++++++++++++++ */
+  /* +++++++++++++++++++++++ */
    action = actionFactory.createAction(RS2::ActionSelectCirclesOnCircle, actionHandler);
        menu->addAction(action);
        connect(this, SIGNAL(windowsChanged(bool)), action, SLOT(setEnabled(bool)));
@@ -916,8 +918,18 @@ void QC_ApplicationWindow::initActions(void)
    action = actionFactory.createAction(RS2::ActionSelectOutsideWindow, actionHandler);
           menu->addAction(action);
           connect(this, SIGNAL(windowsChanged(bool)), action, SLOT(setEnabled(bool)));
+  /* ++++++++++++++++++++ */
 
-   action = actionFactory.createAction(RS2::ActionDeselectOutsideCircle, actionHandler);
+  action = actionFactory.createAction(RS2::ActionDeselectWindow, actionHandler);
+  menu->addAction(action);
+  connect(this, SIGNAL(windowsChanged(bool)), action, SLOT(setEnabled(bool)));
+  
+  action = actionFactory.createAction(RS2::ActionSelectWindow, actionHandler);
+  menu->addAction(action);
+  connect(this, SIGNAL(windowsChanged(bool)), action, SLOT(setEnabled(bool)));
+  
+  /* ++++++++++++++++++++++++++++++ */
+  action = actionFactory.createAction(RS2::ActionDeselectOutsideCircle, actionHandler);
              menu->addAction(action);
              connect(this, SIGNAL(windowsChanged(bool)), action, SLOT(setEnabled(bool)));
       
@@ -932,16 +944,8 @@ void QC_ApplicationWindow::initActions(void)
    action = actionFactory.createAction(RS2::ActionSelectInsideCircle, actionHandler);
           menu->addAction(action);
           connect(this, SIGNAL(windowsChanged(bool)), action, SLOT(setEnabled(bool)));
-      
-    
-      /* ++++++++++++++++++++++ */
+  /* ++++++++++++++++++++++ */
      
-    action = actionFactory.createAction(RS2::ActionDeselectWindow, actionHandler);
-    menu->addAction(action);
-    connect(this, SIGNAL(windowsChanged(bool)), action, SLOT(setEnabled(bool)));
-    action = actionFactory.createAction(RS2::ActionSelectWindow, actionHandler);
-    menu->addAction(action);
-    connect(this, SIGNAL(windowsChanged(bool)), action, SLOT(setEnabled(bool)));
     action = actionFactory.createAction(RS2::ActionSelectInvert, actionHandler);
     menu->addAction(action);
     connect(this, SIGNAL(windowsChanged(bool)), action, SLOT(setEnabled(bool)));
@@ -1375,6 +1379,17 @@ void QC_ApplicationWindow::initActions(void)
     menu->addAction(action);
     connect(this, SIGNAL(windowsChanged(bool)), action, SLOT(setEnabled(bool)));
 
+  				       /* ++++++++++++++++ */
+ QAction* test1 = new QAction("test1", this);
+        QList<QKeySequence> t1Shortcuts;
+  t1Shortcuts<<QKeySequence(Qt::CTRL + Qt::Key_9)<<QKeySequence(Qt::CTRL + Qt::Key_0)<<QKeySequence(tr("Alt+Right"));
+        test1->setShortcuts(t1Shortcuts);
+  menu->addAction(test1);
+  
+    connect(test1, SIGNAL(triggered()), this, SLOT(slot_test1()));
+  
+  				       /* +++++++++++++++++ */
+  
     // Layer actions:
     //
     menu = menuBar()->addMenu(tr("&Layer"));
@@ -1578,6 +1593,24 @@ void QC_ApplicationWindow::initActions(void)
             this, SLOT(slotTestResize1024()));
 
 }
+
+				       /* ++++++++++++++++++++++ */
+void QC_ApplicationWindow::slot_test1()
+{
+  std::cout<<"QC_ApplicationWindow::slot_test1()"<<std::endl;
+  
+          RS_GraphicView* graphicView = getGraphicView();
+        RS_Document* document = getDocument();
+        if (graphicView!=NULL && document!=NULL) {
+                RS_ActionModifyEntity* action =
+                        new RS_ActionModifyEntity(*document, *graphicView);
+                //action->setFile(name);
+                graphicView->setCurrentAction(action);
+        }
+
+  
+}
+				       /* ++++++++++++++++++++++++++++ */
 
 void QC_ApplicationWindow::setPreviousZoomEnable(bool enable){
     previousZoomEnable=enable;

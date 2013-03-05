@@ -298,7 +298,7 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>219</y>
+     <y>285</y>
      <width>32</width>
      <height>32</height>
     </rect>
@@ -336,7 +336,7 @@
    <property name="geometry">
     <rect>
      <x>33</x>
-     <y>219</y>
+     <y>285</y>
      <width>32</width>
      <height>32</height>
     </rect>
@@ -374,7 +374,7 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>252</y>
+     <y>318</y>
      <width>32</width>
      <height>32</height>
     </rect>
@@ -412,7 +412,7 @@
    <property name="geometry">
     <rect>
      <x>33</x>
-     <y>252</y>
+     <y>318</y>
      <width>32</width>
      <height>32</height>
     </rect>
@@ -496,12 +496,12 @@
    <property name="toolTip">
     <string>(De-)select circles with the same size/ Arcs</string>
    </property>
+   <property name="text">
+    <string>c</string>
+   </property>
    <property name="icon">
     <iconset resource="../../../res/extui/extui.qrc">
      <normaloff>:/extui/selectcircles.png</normaloff>:/extui/selectcircles.png</iconset>
-   </property>
-   <property name="text">
-    <string>c</string>
    </property>
   </widget>
   <widget class="QToolButton" name="toolButton">
@@ -522,12 +522,12 @@
    <property name="toolTip">
     <string>(De-) select circles on pitch circle</string>
    </property>
+   <property name="text">
+    <string>cC</string>
+   </property>
    <property name="icon">
     <iconset resource="../../../res/extui/extui.qrc">
      <normaloff>:/extui/selectcirclespitch.png</normaloff>:/extui/selectcirclespitch.png</iconset>
-   </property>
-   <property name="text">
-    <string>cC</string>
    </property>
   </widget>
   <widget class="QToolButton" name="toolButton_9">
@@ -548,12 +548,12 @@
    <property name="toolTip">
     <string>(De-) select circles with same size in window</string>
    </property>
+   <property name="text">
+    <string>ciw</string>
+   </property>
    <property name="icon">
     <iconset resource="../../../res/extui/extui.qrc">
      <normaloff>:/extui/selectcirclesinwindow.png</normaloff>:/extui/selectcirclesinwindow.png</iconset>
-   </property>
-   <property name="text">
-    <string>ciw</string>
    </property>
   </widget>
   <widget class="QToolButton" name="toolButton_6">
@@ -574,12 +574,12 @@
    <property name="toolTip">
     <string>deselect Outside Window</string>
    </property>
-   <property name="icon">
-     <iconset resource="../../../res/extui/extui.qrc">
-     <normaloff>:/extui/deselectoutsidewindow.png</normaloff>:/extui/deselectoutsidewindow.png</iconset>
-   </property>
    <property name="text">
     <string>dow</string>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../res/extui/extui.qrc">
+     <normaloff>:/extui/deselectoutsidewindow.png</normaloff>:/extui/deselectoutsidewindow.png</iconset>
    </property>
   </widget>
   <widget class="QToolButton" name="toolButton_5">
@@ -600,20 +600,19 @@
    <property name="toolTip">
     <string>select Outside Window</string>
    </property>
-   <property name="icon">
-          <iconset resource="../../../res/extui/extui.qrc">
-	  <normaloff>:/extui/selectoutsidewindow.png</normaloff>:/extui/selectoutsidewindow.png</iconset>
-   </property>
-		  
    <property name="text">
     <string>sow</string>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../res/extui/extui.qrc">
+     <normaloff>:/extui/selectoutsidewindow.png</normaloff>:/extui/selectoutsidewindow.png</iconset>
    </property>
   </widget>
   <widget class="QToolButton" name="toolButton_8">
    <property name="geometry">
     <rect>
      <x>33</x>
-     <y>318</y>
+     <y>252</y>
      <width>32</width>
      <height>32</height>
     </rect>
@@ -627,19 +626,19 @@
    <property name="toolTip">
     <string>select Inside Circle</string>
    </property>
-   <property name="icon">
-          <iconset resource="../../../res/extui/extui.qrc">
-	  <normaloff>:/extui/selectinsidecircle.png</normaloff>:/extui/selectinsidecircle.png</iconset>
-   </property>
    <property name="text">
     <string>sic</string>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../res/extui/extui.qrc">
+     <normaloff>:/extui/selectinsidecircle.png</normaloff>:/extui/selectinsidecircle.png</iconset>
    </property>
   </widget>
   <widget class="QToolButton" name="toolButton_3">
    <property name="geometry">
     <rect>
      <x>33</x>
-     <y>285</y>
+     <y>219</y>
      <width>32</width>
      <height>32</height>
     </rect>
@@ -653,19 +652,19 @@
    <property name="toolTip">
     <string>Select Outside Circle</string>
    </property>
-   <property name="icon">
-          <iconset resource="../../../res/extui/extui.qrc">
-	  <normaloff>:/extui/selectoutsidecircle.png</normaloff>:/extui/selectoutsidecircle.png</iconset>
-   </property>
    <property name="text">
     <string>soc</string>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../res/extui/extui.qrc">
+     <normaloff>:/extui/selectoutsidecircle.png</normaloff>:/extui/selectoutsidecircle.png</iconset>
    </property>
   </widget>
   <widget class="QToolButton" name="toolButton_7">
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>318</y>
+     <y>252</y>
      <width>32</width>
      <height>32</height>
     </rect>
@@ -679,19 +678,19 @@
    <property name="toolTip">
     <string>deselect Inside Circle</string>
    </property>
-   <property name="icon">
-          <iconset resource="../../../res/extui/extui.qrc">
-	  <normaloff>:/extui/deselectinsidecircle.png</normaloff>:/extui/deselectinsidecircle.png</iconset>
-   </property>
    <property name="text">
     <string>dic</string>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../res/extui/extui.qrc">
+     <normaloff>:/extui/deselectinsidecircle.png</normaloff>:/extui/deselectinsidecircle.png</iconset>
    </property>
   </widget>
   <widget class="QToolButton" name="toolButton_4">
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>285</y>
+     <y>219</y>
      <width>32</width>
      <height>32</height>
     </rect>
@@ -705,12 +704,12 @@
    <property name="toolTip">
     <string>deselect Outside Circle</string>
    </property>
-   <property name="icon">
-          <iconset resource="../../../res/extui/extui.qrc">
-	  <normaloff>:/extui/deselectoutsidecircle.png</normaloff>:/extui/deselectoutsidecircle.png</iconset>
-   </property>
    <property name="text">
     <string>doc</string>
+   </property>
+   <property name="icon">
+    <iconset resource="../../../res/extui/extui.qrc">
+     <normaloff>:/extui/deselectoutsidecircle.png</normaloff>:/extui/deselectoutsidecircle.png</iconset>
    </property>
   </widget>
  </widget>
@@ -1040,4 +1039,21 @@
    </hints>
   </connection>
  </connections>
+ <designerdata>
+  <property name="gridDeltaX">
+   <number>2</number>
+  </property>
+  <property name="gridDeltaY">
+   <number>2</number>
+  </property>
+  <property name="gridSnapX">
+   <bool>true</bool>
+  </property>
+  <property name="gridSnapY">
+   <bool>true</bool>
+  </property>
+  <property name="gridVisible">
+   <bool>true</bool>
+  </property>
+ </designerdata>
 </ui>
